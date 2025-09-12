@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="login.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login</title>
+    <style>
+      body { 
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; 
+        margin: 2rem; 
+      }
+      form { 
+        max-width: 420px; 
+        display: grid; 
+        gap: 0.5rem; 
+      }
+      input, button { 
+        padding: 0.5rem; 
+      }
+      a { 
+        text-decoration: none; 
+        color: blue; 
+        font-weight: bold; 
+        margin-bottom: 1rem; 
+        display: inline-block;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Fixed HOME link -->
+    <a href="index.html" id="home">HOME</a>
+
+    <h2>Login</h2>
+
+    <form id="form">
+      <input id="email" placeholder="Email" type="email" required />
+      <input id="password" placeholder="Password" type="password" required />
+      <button type="submit">Login</button>
+    </form>
+
+    <script>
+      document.getElementById('form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const payload = {
+          email: document.getElementById('email').value,
+          password: document.getElementById('password').value,
+        };
+
+        try {
+          const res = await fetch('http://localhost:3000/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+
+          let data;
+          try {
+            data = await res.json();
+          } catch {
+            return alert('Unexpected server response');
+          }
+
+          if (!res.ok) {
+            return alert(data.error || 'Login failed');
+          }
+
+          // Store token and role
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('role', data.user && data.user.role ? data.user.role : 'student');
+
+          alert('Logged in!');
+
+          // Redirect based on role
+          if (data.user && data.user.role === 'recruiter') {
+            location.href = 'recruiter.html';
+          } else {
+            location.href = 'dashboard.html';
+          }
+        } catch (err) {
+          alert('Network error: ' + err.message);
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,65 @@
+h2{
+    position:absolute;
+    top:40px;
+    left:47.5%;
+}
+body{
+    overflow: hidden;
+}
+#form{  
+    padding:40px;
+    positiOn:absolute;
+    top:100px;
+    height:300px;
+    left:550px;
+    width:350px;
+    background-color:rgb(7, 52, 118);
+    border-radius: 20px;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0,0.5);
+    animation:upslide 1.2s ease;
+}
+@keyframes upslide{
+    from{
+        top:600px;
+    }
+    to{
+        top:100px;
+    }}
+
+#form input{
+    height:35px;
+    border-radius: 20px;
+    padding:10px;
+    width:300px;
+    
+}
+#form button{
+    height:60px;
+    width: 120px;
+    border-radius: 15px;
+    margin-top:40px;
+    font-size: 25px;
+}
+
+#form #email{
+    margin-bottom: 25px;
+}
+#home {
+    position:absolute;
+    top:490px;
+    left:730px;
+    animation: opa 1.3s ease;
+    text-decoration: none;
+    font-size: 20px;
+}
+@keyframes opa{
+    from{
+        opacity:0;
+    }
+    to{
+        opacity:1;
+    }}  

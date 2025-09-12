@@ -1,0 +1,101 @@
+h2{
+    position:absolute;
+    top:55px;
+    left:240px;
+    font-size: 30px;
+    font-family:Arial, Helvetica, sans-serif;
+    animation: showa 2s ease;
+
+}
+@keyframes showa{
+    from{
+        opacity:0;
+    }
+    to{
+        opacity:1;
+    }}
+
+body{
+    background-color: rgb(255, 255, 255);
+    transition:all 1.3s ease;
+    overflow: hidden;
+}
+
+#form{
+    background-color: rgb(7, 52, 118);
+    border-radius: 20px;
+    position:absolute;
+    top:130px;
+    left:100px;
+    height:400px;
+    width:550px;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    animation:slidein1 1.3s ease;    
+    box-shadow: 0 4px 8px rgba(0, 0, 0,0.5);
+}
+@keyframes slidein1{
+    from{
+        left:-600px;
+    }
+    to{
+        left:100px;
+    }
+}
+#studentExtra{
+    justify-content: center;
+    align-items: center;
+    display:flex;
+}
+#form input{
+    width:300px;
+    margin:10px;
+    padding:10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    height:20px;
+}
+#form select{
+    margin-left:10px;
+    border-radius: 5px;
+}
+ #form button{
+    border-radius: 10px;
+    border:none;
+    width:120px;
+    font-size: 20px;
+    background-color: white;
+    transition: all 0.7s ease;
+    margin-left:5px;
+ }
+ #form button:hover{
+    background-color: black;
+    color:white;
+    transform: scale(1.01);
+    
+ }
+ #sideimage{
+    position: absolute;
+    right:0px;
+    top:0px;
+    height:100%;
+    width:700px;
+    background-size: cover;
+    background-position: -190px -10px;
+    overflow: hidden;
+    background-image:url(' /images/side.jpeg');
+    backdrop-filter: black;
+
+    animation:slidein 1.3s ease;
+    
+ }
+    @keyframes slidein{
+        from{
+            right:-700px;
+        }
+        to{
+            right:0px;
+        }
+    }

@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="register.css" />
+    <title>REGISTER</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 2rem; }
+      form { max-width: 420px; display: grid; gap: 0.5rem; }
+      input, select, button { padding: 0.5rem; }
+      .hint { color: #666; font-size: 0.9em; }
+    </style>
+  </head>
+  <body>
+    <h2>REGISTER</h2>
+    <div id="sideimage"></div>
+    <form id="form">
+          <label>
+      <select id="role">
+        <option value="student">Student</option>
+        <option value="recruiter">Recruiter</option>
+      </select>
+    </label>
+      <input id="fullName" placeholder="Full name" required />
+      <input id="email" placeholder="Email" type="email" required />
+      <input id="password" placeholder="Password" type="password" required />
+      <div id="studentExtra">
+      </div>
+      <div id="recruiterExtra" style="display:none;">
+        <input id="company" placeholder="Company CIN or Name" />
+      </div>
+      <button>SUBMIT</button>
+    </form>
+
+    <script>
+      const roleSel = document.getElementById('role');
+      const studentExtra = document.getElementById('studentExtra');
+      const recruiterExtra = document.getElementById('recruiterExtra');
+      const fullname = document.getElementById('fullName');
+      roleSel.addEventListener('change', () => {
+        const r = roleSel.value;
+        studentExtra.style.display = r === 'student' ? 'block' : 'none';
+        recruiterExtra.style.display = r === 'recruiter' ? 'block' : 'none';
+        fullname.placeholder = r === 'recruiter' ? 'Company Name' : 'Full name';
+        recruiterExtra.style.transition = r ==='student' ? 'all 1.3s ease':'none';
+      });
+      document.getElementById('form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const role = roleSel.value;
+        const payload = {
+          fullName: document.getElementById('fullName').value,
+          email: document.getElementById('email').value,
+          password: document.getElementById('password').value,
+        };
+        let url = '/api/auth/register/student';
+        if (role === 'student') {
+          payload.verificationToken = document.getElementById('verificationToken').value || undefined;
+        } else {
+          url = '/api/auth/register/recruiter';
+          payload.company = document.getElementById('company').value;
+        }
+        const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        const data = await res.json();
+        if (!res.ok) return alert(data.error || 'Error');
+        localStorage.setItem('token', data.token);
+        alert('Registered!');
+        location.href = '/dashboard.html';
+      });
+    </script>
+  </body>
+  </html>
+
+

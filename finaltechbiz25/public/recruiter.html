@@ -1,0 +1,227 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Recruiter Dashboard</title>
+    <style>
+      body { 
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        margin: 0; 
+        background: #f4f6f9; 
+        color: #333;
+        
+      }
+      header {
+        background: rgb(7, 52, 118);
+        color: white;
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      header h2 {
+        margin: 0;
+        font-size: 1.5rem;
+      }
+      header nav a, header button {
+        background: white;
+        color: #007bff;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        text-decoration: none;
+        margin-left: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background 0.3s;
+      }
+      header nav a:hover, header button:hover {
+        background: #e9ecef;
+      }
+      main {
+        padding: 2rem;
+        max-width: 1000px;
+        margin: auto;
+      }
+      h3 {
+        margin-top: 2rem;
+        color: #444;
+        border-left: 4px solid #007bff;
+        padding-left: 8px;
+      }
+      button {
+        cursor: pointer;
+      }
+      #applicationsList div {
+        border-radius: 6px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+      #applicationsList div:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+      }
+      #applicationsList h4 {
+        color: #007bff;
+      }
+      .status-btn {
+        border: none;
+        padding: 6px 10px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background 0.3s, transform 0.1s;
+      }
+      .status-btn:hover {
+        transform: scale(1.05);
+      }
+      .btn-accept { background: #28a745; color: white; }
+      .btn-reject { background: #dc3545; color: white; }
+      .btn-pending { background: #6c757d; color: white; }
+      pre {
+        background: #1e1e2f;
+        color: #dcdcdc;
+        padding: 1rem;
+        border-radius: 6px;
+        overflow-x: auto;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body><a href="/drag.html">
+    <button id="scan" >SCAN RESUME</button></a>
+    <header>
+      <h2>Recruiter Dashboard</h2>
+      <nav>
+        <button id="logout">Logout</button>
+        <a href="/index.html">Home</a>
+      </nav>
+    </header>
+    <main>
+      <div>
+        <h3>Student Applications</h3>
+        <button id="loadApplications">Load Applications</button>
+        <button id="refreshApplications">Refresh</button>
+        <div id="applicationsList"></div>
+      </div>
+      
+      <div>
+        <h3>Application Details (JSON)</h3>
+        <pre id="applicationsJson"></pre>
+      </div>
+    </main>
+    <script>
+      const token = localStorage.getItem('token');
+      const role = localStorage.getItem('role');
+      if (!token) { alert('Please login first'); location.href = '/login.html'; }
+      if (role !== 'recruiter') { alert('Only recruiters'); location.href = '/dashboard.html'; }
+      
+      document.getElementById('logout').onclick = () => { 
+        localStorage.removeItem('token'); 
+        localStorage.removeItem('role'); 
+        location.href = '/index.html'; 
+      };
+      
+      // Load applications for this recruiter
+      async function loadApplications() {
+        try {
+          const res = await fetch('/api/applications/recruiter-applications', {
+            headers: { Authorization: 'Bearer ' + token }
+          });
+          const data = await res.json();
+          
+          // Display JSON data
+          document.getElementById('applicationsJson').textContent = JSON.stringify(data, null, 2);
+          
+          // Display formatted list
+          const container = document.getElementById('applicationsList');
+          container.innerHTML = '';
+          
+          if (data.applications && data.applications.length > 0) {
+            data.applications.forEach(app => {
+              const div = document.createElement('div');
+              div.style.border = '1px solid #ddd';
+              div.style.padding = '15px';
+              div.style.margin = '10px 0';
+              div.style.backgroundColor = app.certificate_verified ? '#e8f5e8' : '#fff3cd';
+              
+              const statusColor = {
+                'pending': '#856404',
+                'accepted': '#155724',
+                'rejected': '#721c24'
+              }[app.status] || '#333';
+              
+              div.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                  <div>
+                    <h4 style="margin: 0 0 5px 0;">${app.student_name || app.student_email}</h4>
+                    <p style="margin: 5px 0; color: #666;">
+                      <strong>Email:</strong> ${app.student_email}<br>
+                      <strong>Applied:</strong> ${new Date(app.applied_at).toLocaleString()}<br>
+                      <strong>Status:</strong> <span style="color: ${statusColor}; font-weight: bold;">${app.status.toUpperCase()}</span>
+                    </p>
+                    ${app.certificate_verified ? 
+                      `<p style="margin: 5px 0; color: green;">
+                        <strong>✓ Verified Certificate:</strong> ${app.course_name || 'N/A'} 
+                        ${app.company_name ? `from ${app.company_name}` : ''}
+                        ${app.certificate_verified_at ? `(verified ${new Date(app.certificate_verified_at).toLocaleDateString()})` : ''}
+                      </p>` : 
+                      `<p style="margin: 5px 0; color: orange;">
+                        <strong>⚠ No verified certificates</strong>
+                      </p>`
+                    }
+                    ${app.notes ? `<p style="margin: 5px 0;"><strong>Notes:</strong> ${app.notes}</p>` : ''}
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 5px;">
+                    <button onclick="updateApplicationStatus('${app.id}', 'accepted')" class="status-btn btn-accept">Accept</button>
+                    <button onclick="updateApplicationStatus('${app.id}', 'rejected')" class="status-btn btn-reject">Reject</button>
+                    <button onclick="updateApplicationStatus('${app.id}', 'pending')" class="status-btn btn-pending">Pending</button>
+                  </div>
+                </div>
+              `;
+              container.appendChild(div);
+            });
+          } else {
+            container.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No applications received yet</p>';
+          }
+        } catch (e) {
+          console.error('Failed to load applications:', e);
+          document.getElementById('applicationsList').innerHTML = '<p style="color: red;">Error loading applications</p>';
+        }
+      }
+      
+      // Update application status
+      async function updateApplicationStatus(applicationId, status) {
+        try {
+          const res = await fetch(`/api/applications/${applicationId}/status`, {
+            method: 'PATCH',
+            headers: {
+              'Authorization': 'Bearer ' + token,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status })
+          });
+          
+          const data = await res.json();
+          if (res.ok) {
+            alert(`Application ${status} successfully`);
+            loadApplications(); // Refresh the list
+          } else {
+            alert('Error: ' + data.error);
+          }
+        } catch (e) {
+          console.error('Failed to update application:', e);
+          alert('Failed to update application. Please try again.');
+        }
+      }
+      
+      // Event listeners
+      document.getElementById('loadApplications').onclick = loadApplications;
+      document.getElementById('refreshApplications').onclick = loadApplications;
+      
+      // Load applications on page load
+      loadApplications();
+    </script>
+  </body>
+</html>
