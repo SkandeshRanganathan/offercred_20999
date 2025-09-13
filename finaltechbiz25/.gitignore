@@ -1,0 +1,73 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+QuickStart/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.env
+venv/
+ENV/
+.env
+
+# VS Code
+.vscode/
+
+# Mac/Windows system files
+.DS_Store
+Thumbs.db
+
+# Build output
+/dist/
+/build/
+
+# Uploaded files
+uploads/*
+
+# Logs
+*.log
+
+# Misc
+*.swp
+*.swo
+
+# Ignore PDFs and other large files
+*.pdf
+*.zip
+*.tar.gz
+
+# Ignore database files
+*.sqlite
+*.db
+
+# Ignore coverage reports
+coverage/
+*.lcov
+
+# Ignore test output
+junit.xml
+
+# Ignore compiled files
+*.out
+*.exe
+*.dll
+*.so
+*.o
+*.obj
+
+# Ignore temp files
+*.tmp
+*.bak
+~$*
+
+# Ignore assets cache
+public/assets/cache/
+
+# Ignore generated signatures
+src/signatures.json
+src/signatures.txt
